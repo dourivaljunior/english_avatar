@@ -147,7 +147,7 @@
             headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [{role: "system", content: "You are Mario, a male English teacher. Brief answers."}, {role: "user", content: t}]
+                messages: [{role: "system", content: "You are Mary, a male English teacher. Brief answers."}, {role: "user", content: t}]
             })
         });
         const d = await res.json();
@@ -163,7 +163,7 @@
         utterance.onstart = () => {
             ui.className = "avatar-circle talking-anim";
             animateWaves(true);
-            log.innerHTML = `<b>Mário:</b> ${text}`;
+            log.innerHTML = `<b>Mary:</b> ${text}`;
         };
 
         utterance.onend = () => {
