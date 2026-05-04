@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mario Tutor 2D - Groq</title>
+    <title>Mario Tutor 2D - Estável</title>
     <style>
         :root { --bg: #0f172a; --blue: #00d2ff; --green: #39ff14; --red: #ff4d4d; --yellow: #f59e0b; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); padding: 2.5rem; border-radius: 2rem; text-align: center; width: 380px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); padding: 2rem; border-radius: 2rem; text-align: center; width: 380px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         
-        /* Avatar Circular com a imagem do Mário */
         .avatar-circle {
             width: 180px; height: 180px; margin: 0 auto 1.5rem; border-radius: 50%;
-            border: 6px solid #334155; overflow: hidden; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: #000; position: relative;
+            border: 6px solid #334155; overflow: hidden; transition: 0.3s ease;
+            background: #000; position: relative; display: flex; align-items: center; justify-content: center;
         }
-        #mario-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        #mario-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        #placeholder-text { color: #475569; font-size: 0.8rem; padding: 10px; }
 
         /* Estados Visuais */
         .listening { border-color: var(--red); box-shadow: 0 0 30px var(--red); transform: scale(1.05); }
@@ -25,22 +26,34 @@
 
         @keyframes pulse { 0% { transform: scale(1.05); } 50% { transform: scale(1.08); } 100% { transform: scale(1.05); } }
 
-        .btn-main { background: var(--blue); color: #000; border: none; padding: 1rem; border-radius: 1rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
-        #display-text { margin-top: 1.5rem; font-size: 0.95rem; height: 90px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: left; border-left: 3px solid var(--blue); }
-        input[type="file"] { font-size: 0.7rem; color: #94a3b8; margin-bottom: 15px; width: 100%; }
+        .btn-main { background: var(--blue); color: #000; border: none; padding: 1rem; border-radius: 1rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; }
+        #display-text { margin-top: 1.5rem; font-size: 0.9rem; height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: left; border-left: 3px solid var(--blue); }
+        
+        .input-group { text-align: left; margin-bottom: 10px; }
+        label { font-size: 0.7rem; color: #94a3b8; display: block; margin-bottom: 4px; }
+        input[type="file"] { font-size: 0.7rem; color: #94a3b8; width: 100%; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <div class="avatar-circle" id="mario-ui">
-        <!-- Usando a imagem que você anexou -->
-        <img id="mario-img" src="avatar.jfif" alt="Mário">
+        <div id="placeholder-text">Carregue a imagem abaixo</div>
+        <img id="mario-img" src="" alt="Mário">
     </div>
 
-    <input type="file" id="keyFile" accept=".txt">
+    <div class="input-group">
+        <label>1. FOTO (avatar.jfif):</label>
+        <input type="file" id="imgFile" accept="image/*">
+    </div>
+
+    <div class="input-group">
+        <label>2. CHAVE (key.txt):</label>
+        <input type="file" id="keyFile" accept=".txt">
+    </div>
+
     <button id="actionBtn" class="btn-main">INICIAR AULA</button>
-    <div id="display-text">Aguardando chave da Groq...</div>
+    <div id="display-text">Aguardando arquivos...</div>
 </div>
 
 <script>
@@ -50,13 +63,24 @@
     const btn = document.getElementById('actionBtn');
     const log = document.getElementById('display-text');
     const ui = document.getElementById('mario-ui');
+    const imgElement = document.getElementById('mario-img');
+    const placeholder = document.getElementById('placeholder-text');
 
-    // Configuração do Microfone
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'en-US';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    // Carregar Imagem Manualmente para evitar erro de bloqueio local
+    document.getElementById('imgFile').onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                imgElement.src = ev.target.result;
+                imgElement.style.display = "block";
+                placeholder.style.display = "none";
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
+    // Carregar Chave
     document.getElementById('keyFile').onchange = (e) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -66,8 +90,11 @@
         reader.readAsText(e.target.files[0]);
     };
 
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+
     btn.onclick = () => {
-        if (!GROQ_KEY) return alert("Selecione o arquivo key.txt!");
+        if (!GROQ_KEY || !imgElement.src) return alert("Carregue a imagem e a chave!");
         if (!isActive) {
             isActive = true;
             btn.innerText = "PARAR SESSÃO";
@@ -84,10 +111,8 @@
         try {
             recognition.start();
             ui.className = "avatar-circle listening";
-            log.innerHTML = "<b style='color:#ff4d4d'>Ouvindo...</b> Fale agora.";
-        } catch (e) {
-            console.log("Erro ao iniciar mic:", e);
-        }
+            log.innerHTML = "<b style='color:#ff4d4d'>Ouvindo...</b>";
+        } catch (e) {}
     }
 
     recognition.onresult = async (event) => {
@@ -98,7 +123,6 @@
     };
 
     async function askGroq(userInput) {
-        log.innerHTML = "<b>Mário está pensando...</b>";
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -114,39 +138,26 @@
                     ]
                 })
             });
-
             const data = await response.json();
-            const reply = data.choices[0].message.content;
-            speak(reply);
+            speak(data.choices[0].message.content);
         } catch (err) {
-            log.innerHTML = `<span style='color:red'>Erro: ${err.message}</span>`;
-            isActive = false;
+            log.innerHTML = "Erro na API.";
         }
     }
 
     function speak(text) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
-
         utterance.onstart = () => {
             ui.className = "avatar-circle speaking";
             log.innerHTML = `<b>Mário:</b> ${text}`;
         };
-
         utterance.onend = () => {
             ui.className = "avatar-circle";
             if (isActive) setTimeout(startListening, 600);
         };
-
         window.speechSynthesis.speak(utterance);
     }
-
-    // Garante que o microfone resete se fechar sozinho
-    recognition.onend = () => {
-        if (isActive && ui.className.includes("listening")) {
-            setTimeout(startListening, 100);
-        }
-    };
 </script>
 </body>
 </html>
