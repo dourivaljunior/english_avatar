@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AI Avatar Emma - Groq AI | Conversa em Inglês</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #f06595 25%, #cc5de8 50%, #5f3dc4 75%, #3b5bdb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 48px;
+            padding: 28px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Avatar Section */
+        .avatar-section {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            padding: 35px 30px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        #avatar-img {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+        }
+
+        @keyframes speak {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+            50% { transform: scale(1.08); box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+        }
+
+        @keyframes listen {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(-5deg); }
+            75% { transform: scale(1.05) rotate(5deg); }
+        }
+
+        @keyframes think {
+            0%, 100% { opacity: 1; transform: translateY(0px); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+            50% { opacity: 0.8; transform: translateY(-8px); filter: drop-shadow(0 10px 20px rgba(255,255,255,0.3)); }
+        }
+
+        .avatar-speaking { animation: speak 0.5s ease-in-out infinite; }
+        .avatar-listening { animation: listen 0.7s ease-in-out infinite; }
+        .avatar-thinking { animation: think 0.8s ease-in-out infinite; }
+
+        .status {
+            margin-top: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 5px #4ade80;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        .status-text {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Config Section */
+        .config-section {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+        }
+
+        .config-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #92400e;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .file-input-wrapper input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border: 2px solid #f59e0b;
+            border-radius: 60px;
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .file-label:hover {
+            background: #fffbeb;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .file-label span:first-child {
+            color: #92400e;
+        }
+
+        .file-label span:last-child {
+            color: #f59e0b;
+        }
+
+        .key-status {
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 60px;
+            width: fit-content;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            background: #1e1b4b;
+            border-radius: 28px;
+            padding: 20px;
+            height: 320px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: #2d2a5e;
+            border-radius: 10px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            display: flex;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user { justify-content: flex-end; }
+        .message.ai { justify-content: flex-start; }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 24px;
+            font-size: 14px;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .user .message-content {
+            background: linear-gradient(135deg, #3b82f6, #7c3aed);
+            color: white;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .ai .message-content {
+            background: linear-gradient(135deg, #1e1b4b, #2d2a5e);
+            color: #e0e7ff;
+            border: 1px solid #8b5cf6;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-start {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-clear:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            gap: 14px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 16px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            font-size: 14px;
+            color: #1e1b4b;
+            outline: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .input-group input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            width: auto;
+            padding: 16px 32px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Loading */
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 6px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.3); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 60px;
+        }
+
+        @media (max-width: 550px) {
+            .container { padding: 18px; }
+            #avatar-img { width: 120px; height: 120px; }
+            .message-content { max-width: 90%; font-size: 12px; }
+            .btn { padding: 12px; font-size: 12px; }
+            .btn-send { padding: 12px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Avatar Section -->
+        <div class="avatar-section">
+            <div class="avatar-wrapper">
+                <img id="avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Emma&backgroundColor=8b5cf6&hairColor=ff6b6b&skinColor=f2d5c4&accessories=round&clothing=blazer&clothingColor=ffffff&eyes=happy&eyebrows=raised&mouth=smile" alt="Emma Avatar">
+            </div>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span class="status-text" id="status-text">✨ Configurar API Key</span>
+            </div>
+        </div>
+
+        <!-- Config Section -->
+        <div class="config-section">
+            <div class="config-title">
+                🚀 <span>GROQ API KEY (Rápido e Gratuito)</span>
+            </div>
+            <div class="file-input-wrapper">
+                <div class="file-label" id="file-label">
+                    <span>📁 Carregar arquivo groq_key.txt</span>
+                    <span>⚡</span>
+                </div>
+                <input type="file" id="keyFile" accept=".txt">
+            </div>
+            <div id="key-status" class="key-status" style="display: none;">
+                🎉 Chave Groq carregada com sucesso!
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area" id="chat-area">
+            <div class="message ai">
+                <div class="message-content">
+                    🌟 Hello! I'm Emma, powered by Groq AI.<br>
+                    📁 Upload your groq_key.txt file above, then click START to begin!
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-start" id="start-btn" disabled>
+                🎯 INICIAR
+            </button>
+            <button class="btn btn-stop" id="stop-btn" disabled>
+                🛑 PARAR
+            </button>
+            <button class="btn btn-clear" id="clear-btn">
+                🧹 LIMPAR
+            </button>
+        </div>
+
+        <!-- Input Group -->
+        <div class="input-group">
+            <input type="text" id="text-input" placeholder="✏️ Type your message in English..." disabled>
+            <button class="btn btn-send" id="send-btn" disabled>📤 SEND</button>
+        </div>
+
+        <div class="info">
+            ⚡ Groq AI | Super rápida | Fale em inglês | Emma responde naturalmente
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIGURAÇÃO GROQ API (baseado no código que funcionou com Gemini)
+        // ============================================================
+        const GROQ_MODEL = 'llama-3.3-70b-versatile';  // Modelo rápido e gratuito da Groq
+        let apiKey = '';
+        let isConversationActive = false;
+        let recognition = null;
+        let isRecording = false;
+        let currentUtterance = null;
+
+        // Elementos DOM
+        const avatarImg = document.getElementById('avatar-img');
+        const statusText = document.getElementById('status-text');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const textInput = document.getElementById('text-input');
+        const chatArea = document.getElementById('chat-area');
+        const keyFileInput = document.getElementById('keyFile');
+        const keyStatus = document.getElementById('key-status');
+
+        // ============================================================
+        // FUNÇÕES DE INTERFACE
+        // ============================================================
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            messageDiv.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            return messageDiv;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        function animateAvatar(action) {
+            avatarImg.classList.remove('avatar-speaking', 'avatar-listening', 'avatar-thinking');
+            
+            switch(action) {
+                case 'speaking':
+                    avatarImg.classList.add('avatar-speaking');
+                    statusText.innerText = '🤖 Speaking...';
+                    break;
+                case 'listening':
+                    avatarImg.classList.add('avatar-listening');
+                    statusText.innerText = '🎙️ Listening...';
+                    break;
+                case 'thinking':
+                    avatarImg.classList.add('avatar-thinking');
+                    statusText.innerText = '✨ Thinking...';
+                    break;
+                default:
+                    statusText.innerText = isConversationActive ? '✅ Ready' : '⭐ Ready to start';
+            }
+        }
+
+        function speakText(text) {
+            return new Promise((resolve) => {
+                if (!isConversationActive) {
+                    resolve();
+                    return;
+                }
+                
+                if ('speechSynthesis' in window) {
+                    if (currentUtterance) {
+                        window.speechSynthesis.cancel();
+                    }
+                    
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 1;
+                    
+                    utterance.onstart = () => animateAvatar('speaking');
+                    utterance.onend = () => {
+                        animateAvatar('ready');
+                        currentUtterance = null;
+                        resolve();
+                    };
+                    utterance.onerror = () => {
+                        animateAvatar('ready');
+                        currentUtterance = null;
+                        resolve();
+                    };
+                    
+                    currentUtterance = utterance;
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        // ============================================================
+        // FUNÇÃO PRINCIPAL - API GROQ (baseada no código que funcionou)
+        // ============================================================
+        async function callGroqAPI(message) {
+            if (!apiKey) {
+                return "⚠️ Please upload your Groq API key file first. Get it at console.groq.com";
+            }
+
+            try {
+                const url = 'https://api.groq.com/openai/v1/chat/completions';
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: GROQ_MODEL,
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'You are Emma, a friendly and energetic English conversation partner. Keep responses VERY SHORT (maximum 2 sentences). Be natural, helpful, and use simple English.'
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 100,
+                        top_p: 0.9
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const reply = data.choices?.[0]?.message?.content;
+                    if (reply) {
+                        return reply;
+                    }
+                    return "I'm not sure how to respond to that.";
+                } else {
+                    console.error('Groq API Error:', data);
+                    const errorMsg = data.error?.message || 'Unknown error';
+                    
+                    if (errorMsg.includes('API key')) {
+                        return "❌ Invalid Groq API Key. Please check your key file. Get a key at console.groq.com";
+                    }
+                    if (errorMsg.includes('quota')) {
+                        return "⚠️ Quota exceeded. Groq free tier has limits. Please wait or check your account.";
+                    }
+                    return `❌ Error: ${errorMsg}`;
+                }
+
+            } catch (error) {
+                console.error('Network Error:', error);
+                return "⚠️ Network error. Please check your connection.";
+            }
+        }
+
+        async function processMessage(userMessage) {
+            if (!userMessage.trim()) return;
+            if (!isConversationActive) return;
+
+            if (recognition && isRecording) {
+                recognition.stop();
+            }
+
+            addMessage(userMessage, true);
+            showTypingIndicator();
+            animateAvatar('thinking');
+
+            const aiResponse = await callGroqAPI(userMessage);
+            
+            hideTypingIndicator();
+            addMessage(aiResponse, false);
+            await speakText(aiResponse);
+        }
+
+        // ============================================================
+        // RECONHECIMENTO DE VOZ
+        // ============================================================
+        function setupSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                addMessage("⚠️ Speech recognition not supported. Please use Chrome browser.", false);
+                return null;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recog = new SpeechRecognition();
+            recog.lang = 'en-US';
+            recog.continuous = true;
+            recog.interimResults = false;
+            recog.maxAlternatives = 1;
+            
+            recog.onstart = () => {
+                isRecording = true;
+                animateAvatar('listening');
+                statusText.innerText = '🎙️ Listening... Speak now!';
+            };
+            
+            recog.onend = () => {
+                isRecording = false;
+                if (isConversationActive) {
+                    animateAvatar('ready');
+                    statusText.innerText = '✅ Ready for next message';
+                }
+            };
+            
+            recog.onresult = (event) => {
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        const userMessage = event.results[i][0].transcript;
+                        if (userMessage && userMessage.trim()) {
+                            processMessage(userMessage);
+                        }
+                    }
+                }
+            };
+            
+            recog.onerror = (event) => {
+                console.error('Speech error:', event.error);
+                if (event.error === 'not-allowed') {
+                    addMessage("⚠️ Please allow microphone access to use voice input.", false);
+                }
+                isRecording = false;
+                if (isConversationActive) {
+                    animateAvatar('ready');
+                    statusText.innerText = '✅ Ready (microphone allowed?)';
+                }
+            };
+            
+            return recog;
+        }
+
+        // ============================================================
+        // CONTROLES
+        // ============================================================
+        function startConversation() {
+            if (!apiKey) {
+                addMessage("⚠️ Please upload your groq_key.txt file first. Get a free key at console.groq.com", false);
+                return;
+            }
+            
+            isConversationActive = true;
+            
+            if (!recognition) {
+                recognition = setupSpeechRecognition();
+            }
+            
+            if (recognition) {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log('Recognition already started:', e);
+                }
+            }
+            
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            sendBtn.disabled = false;
+            textInput.disabled = false;
+            animateAvatar('ready');
+            statusText.innerText = '🎉 Ready! Speak or type in English';
+            addMessage("🎤 Conversation started! Speak in English or type your message. I'm powered by Groq AI!", false);
+        }
+
+        function stopConversation() {
+            isConversationActive = false;
+            
+            if (recognition && isRecording) {
+                try {
+                    recognition.stop();
+                } catch (e) {}
+            }
+            
+            if (currentUtterance) {
+                window.speechSynthesis.cancel();
+                currentUtterance = null;
+            }
+            
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            sendBtn.disabled = true;
+            textInput.disabled = true;
+            animateAvatar('ready');
+            statusText.innerText = '⏸️ Stopped. Click START to begin';
+            addMessage("⏹️ Conversation stopped. Click START to begin again.", false);
+        }
+
+        function clearChat() {
+            chatArea.innerHTML = '';
+            addMessage("✨ Chat cleared! Ready to continue.", false);
+        }
+
+        // ============================================================
+        // CARREGAR CHAVE DO ARQUIVO .txt
+        // ============================================================
+        function loadKeyFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                let key = ev.target.result.trim();
+                key = key.replace(/[\n\r\t\s]/g, '');
+                
+                if (key && key.length > 10) {  // Groq keys são longas, começam com gsk_
+                    apiKey = key;
+                    keyStatus.style.display = 'flex';
+                    startBtn.disabled = false;
+                    addMessage("✅ Groq API Key loaded successfully! Click START to begin.", false);
+                    console.log('✅ Groq key loaded successfully');
+                } else {
+                    apiKey = '';
+                    keyStatus.style.display = 'none';
+                    startBtn.disabled = true;
+                    addMessage("❌ Invalid API Key. Please make sure your groq_key.txt contains a valid Groq API key. Get one at console.groq.com", false);
+                }
+            };
+            reader.onerror = () => {
+                addMessage("❌ Error reading file. Please try again.", false);
+            };
+            reader.readAsText(file);
+        }
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        keyFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                loadKeyFromFile(e.target.files[0]);
+            }
+        });
+
+        startBtn.addEventListener('click', startConversation);
+        stopBtn.addEventListener('click', stopConversation);
+        clearBtn.addEventListener('click', clearChat);
+
+        sendBtn.addEventListener('click', () => {
+            if (!isConversationActive) {
+                addMessage("⚠️ Please click START to begin the conversation.", false);
+                return;
+            }
+            const message = textInput.value.trim();
+            if (message) {
+                processMessage(message);
+                textInput.value = '';
+            }
+        });
+
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && isConversationActive) {
+                sendBtn.click();
+            }
+        });
+
+        const fileLabel = document.getElementById('file-label');
+        fileLabel.addEventListener('click', () => {
+            keyFileInput.click();
+        });
+
+        console.log('🚀 Emma powered by Groq AI! Ready!');
+        addMessage("📁 Please upload your groq_key.txt file. Get a free key at console.groq.com", false);
+    </script>
+</body>
+</html>
