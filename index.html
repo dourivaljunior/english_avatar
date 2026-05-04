@@ -3,218 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mário 3D Tutor - Groq Powered</title>
+    <title>Mario Tutor 2D - Groq</title>
     <style>
-        :root {
-            --neon-blue: #00d2ff;
-            --deep-space: #020617;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--deep-space);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
-        }
-
-        /* Container do Avatar 3D */
-        #avatar-container {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-        }
-
-        /* Interface Sobreposta */
-        .interface {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100vh;
-            padding: 30px;
-            box-sizing: border-box;
-            pointer-events: none;
-        }
-
-        .top-panel {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            width: 320px;
-            pointer-events: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .status-light {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #4ade80;
-            margin-right: 8px;
-            box-shadow: 0 0 10px #4ade80;
-        }
-
-        #display-text {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #cbd5e1;
-            min-height: 40px;
-            line-height: 1.4;
-        }
-
-        .controls {
-            margin-top: 20px;
-            display: grid;
-            gap: 10px;
-        }
-
-        button {
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        #startBtn { background: var(--neon-blue); color: #000; }
-        #startBtn:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--neon-blue); }
+        :root { --bg: #0f172a; --blue: #00d2ff; --green: #39ff14; --red: #ff4d4d; --yellow: #f59e0b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         
-        #stopBtn { background: rgba(255,255,255,0.1); color: white; }
-
-        input[type="file"] {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            margin-top: 10px;
-            width: 100%;
+        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); padding: 2.5rem; border-radius: 2rem; text-align: center; width: 380px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        /* Avatar Circular com a imagem do Mário */
+        .avatar-circle {
+            width: 180px; height: 180px; margin: 0 auto 1.5rem; border-radius: 50%;
+            border: 6px solid #334155; overflow: hidden; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #000; position: relative;
         }
+        #mario-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .loading-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--deep-space);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
+        /* Estados Visuais */
+        .listening { border-color: var(--red); box-shadow: 0 0 30px var(--red); transform: scale(1.05); }
+        .thinking { border-color: var(--yellow); box-shadow: 0 0 30px var(--yellow); }
+        .speaking { border-color: var(--green); box-shadow: 0 0 30px var(--green); animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0% { transform: scale(1.05); } 50% { transform: scale(1.08); } 100% { transform: scale(1.05); } }
+
+        .btn-main { background: var(--blue); color: #000; border: none; padding: 1rem; border-radius: 1rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
+        #display-text { margin-top: 1.5rem; font-size: 0.95rem; height: 90px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: left; border-left: 3px solid var(--blue); }
+        input[type="file"] { font-size: 0.7rem; color: #94a3b8; margin-bottom: 15px; width: 100%; }
     </style>
 </head>
 <body>
 
-<div id="loading" class="loading-screen">
-    <h3>INITIALIZING 3D ENVIRONMENT...</h3>
+<div class="card">
+    <div class="avatar-circle" id="mario-ui">
+        <!-- Usando a imagem que você anexou -->
+        <img id="mario-img" src="avatar.jfif" alt="Mário">
+    </div>
+
+    <input type="file" id="keyFile" accept=".txt">
+    <button id="actionBtn" class="btn-main">INICIAR AULA</button>
+    <div id="display-text">Aguardando chave da Groq...</div>
 </div>
 
-<div id="avatar-container"></div>
-
-<div class="interface">
-    <div class="top-panel">
-        <div style="display: flex; align-items: center;">
-            <span id="indicator" class="status-light" style="background: #64748b; box-shadow: none;"></span>
-            <h2 style="margin:0; font-size: 1.2rem; letter-spacing: 1px;">MÁRIO 3D TUTOR</h2>
-        </div>
-        
-        <input type="file" id="keyFile" accept=".txt">
-        
-        <div id="display-text">Ready. Please upload your Groq key.</div>
-
-        <div class="controls">
-            <button id="startBtn">Activate Mário 3D</button>
-            <button id="stopBtn">Reset Session</button>
-        </div>
-    </div>
-    
-    <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.7rem; pointer-events: none;">
-        POWERED BY GROQ LPU & READY PLAYER ME
-    </div>
-</div>
-
-<script type="module">
-    import { TalkingHead } from "https://cdn.jsdelivr.net/gh/metavoicexyz/talkinghead/dist/talkinghead.mjs";
-
+<script>
     let GROQ_KEY = "";
-    let isRunning = false;
-    let head;
+    let isActive = false;
 
-    const startBtn = document.getElementById('startBtn');
-    const indicator = document.getElementById('indicator');
-    const displayText = document.getElementById('display-text');
+    const btn = document.getElementById('actionBtn');
+    const log = document.getElementById('display-text');
+    const ui = document.getElementById('mario-ui');
 
-    // 1. Configuração do Avatar 3D (Estilo aproximado ao da imagem fornecida)
-    async function initAvatar() {
-        const node = document.getElementById('avatar-container');
-        head = new TalkingHead(node, {
-            // Modelo 3D: Jovem, óculos, estilo professor moderno
-            modelUrl: 'https://models.readyplayer.me/66436034175330364903332a.glb', 
-            cameraView: 'upperbody',
-            ttsLang: 'en-US',
-            lipsyncModules: ['vowels'],
-            cameraDistance: 1.0,
-            cameraRotateY: 0,
-        });
-
-        await head.makeIdle();
-        document.getElementById('loading').style.display = 'none';
-    }
-
-    // 2. Reconhecimento de Voz
+    // Configuração do Microfone
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
     recognition.continuous = false;
+    recognition.interimResults = false;
 
     document.getElementById('keyFile').onchange = (e) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
             GROQ_KEY = ev.target.result.trim().replace(/[\n\r\t\s]/g, "");
-            displayText.innerText = "Key authorized. Mário is online.";
-            indicator.style.background = "#4ade80";
-            indicator.style.boxShadow = "0 0 10px #4ade80";
+            log.innerText = "Chave carregada! Clique em INICIAR.";
         };
         reader.readAsText(e.target.files[0]);
     };
 
-    startBtn.onclick = async () => {
-        if (!GROQ_KEY) return alert("Select key.txt first!");
-        isRunning = true;
-        startBtn.style.display = "none";
-        loopListen();
+    btn.onclick = () => {
+        if (!GROQ_KEY) return alert("Selecione o arquivo key.txt!");
+        if (!isActive) {
+            isActive = true;
+            btn.innerText = "PARAR SESSÃO";
+            btn.style.background = "#334155";
+            btn.style.color = "#fff";
+            startListening();
+        } else {
+            location.reload();
+        }
     };
 
-    document.getElementById('stopBtn').onclick = () => location.reload();
-
-    function loopListen() {
-        if (!isRunning) return;
+    function startListening() {
+        if (!isActive) return;
         try {
             recognition.start();
-            indicator.style.background = "#ff4d4d";
-            indicator.style.boxShadow = "0 0 15px #ff4d4d";
-            displayText.innerHTML = "<b>Listening...</b> Speak now.";
-        } catch (e) {}
+            ui.className = "avatar-circle listening";
+            log.innerHTML = "<b style='color:#ff4d4d'>Ouvindo...</b> Fale agora.";
+        } catch (e) {
+            console.log("Erro ao iniciar mic:", e);
+        }
     }
 
     recognition.onresult = async (event) => {
         const text = event.results[0][0].transcript;
-        indicator.style.background = "#00d2ff";
-        indicator.style.boxShadow = "0 0 10px #00d2ff";
-        displayText.innerHTML = `<b>You:</b> ${text}`;
-        await getGroqResponse(text);
+        log.innerHTML = `<b>Você:</b> ${text}`;
+        ui.className = "avatar-circle thinking";
+        await askGroq(text);
     };
 
-    async function getGroqResponse(userInput) {
+    async function askGroq(userInput) {
+        log.innerHTML = "<b>Mário está pensando...</b>";
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -225,7 +109,7 @@
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: "You are Mario, a charismatic 3D English teacher. Be friendly and keep responses under 25 words." },
+                        { role: "system", content: "You are Mario, a friendly English teacher. Short answers only." },
                         { role: "user", content: userInput }
                     ]
                 })
@@ -233,20 +117,36 @@
 
             const data = await response.json();
             const reply = data.choices[0].message.content;
-            
-            displayText.innerHTML = `<b>Mário:</b> ${reply}`;
-            
-            // 3. Sincronização Labial e Voz Masculina
-            // Nota: O TalkingHead usa a voz padrão do sistema configurada para en-US
-            await head.speak(reply);
-            
-            if (isRunning) loopListen();
+            speak(reply);
         } catch (err) {
-            displayText.innerHTML = "Connection error: " + err.message;
+            log.innerHTML = `<span style='color:red'>Erro: ${err.message}</span>`;
+            isActive = false;
         }
     }
 
-    window.onload = initAvatar;
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+
+        utterance.onstart = () => {
+            ui.className = "avatar-circle speaking";
+            log.innerHTML = `<b>Mário:</b> ${text}`;
+        };
+
+        utterance.onend = () => {
+            ui.className = "avatar-circle";
+            if (isActive) setTimeout(startListening, 600);
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Garante que o microfone resete se fechar sozinho
+    recognition.onend = () => {
+        if (isActive && ui.className.includes("listening")) {
+            setTimeout(startListening, 100);
+        }
+    };
 </script>
 </body>
 </html>
