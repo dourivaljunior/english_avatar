@@ -3,319 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI English Tutor - Professional Experience</title>
-    <!-- Fontes Modernas -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>AI English Tutor - Ultra Edition</title>
     <style>
         :root {
             --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --bg: #0b0f1a;
-            --card-bg: rgba(23, 28, 41, 0.8);
-            --text: #ffffff;
-            --text-muted: #94a3b8;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
             --accent: #10b981;
         }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg); color: var(--text);
-            overflow: hidden; display: flex; flex-direction: column;
+        body {
+            margin: 0; font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--text);
+            display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* Fundo Animado */
-        .mesh-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
-            z-index: -1;
+        main {
+            display: flex; width: 100%; max-width: 1200px; margin: auto;
+            height: 85vh; gap: 20px; padding: 20px;
         }
 
-        header {
-            padding: 1.5rem 3rem; display: flex; justify-content: space-between;
-            align-items: center; background: rgba(11, 15, 26, 0.6);
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 100;
+        /* Avatar Section */
+        #avatar-box {
+            flex: 1; background: var(--card); border-radius: 24px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1); position: relative;
         }
 
-        .brand { font-size: 1.5rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .brand-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 15px var(--primary); }
-
-        main { flex: 1; display: flex; padding: 2rem 3rem; gap: 2rem; position: relative; max-width: 1600px; margin: 0 auto; width: 100%; }
-
-        /* Avatar Container Refinado */
-        #avatar-section {
-            flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: var(--card-bg); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-        }
-
-        .avatar-circle-outer {
-            width: 380px; height: 380px; border-radius: 50%;
-            border: 2px solid rgba(99, 102, 241, 0.2);
+        .circle {
+            width: 300px; height: 300px; border-radius: 50%;
+            background: #2d3748; border: 5px solid var(--primary);
             display: flex; align-items: center; justify-content: center;
-            position: relative; transition: all 0.5s ease;
-        }
-
-        .avatar-circle-inner {
-            width: 320px; height: 320px; border-radius: 50%;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 4px solid var(--primary);
             overflow: hidden; position: relative;
-            box-shadow: 0 0 50px rgba(99, 102, 241, 0.3);
-            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
         }
 
-        /* Avatar Visual - Usando SVG Dinâmico para Garantia de Carregamento */
-        #avatar-img {
-            width: 100%; height: 100%; object-fit: cover;
-            transform: scale(1.1); transition: transform 0.3s ease;
+        /* SVG Avatar Embutido (Garante que sempre apareça) */
+        #teacher-svg { width: 220px; height: 220px; transition: all 0.3s; }
+
+        .talking #teacher-svg { animation: talk-anim 0.2s infinite alternate; }
+        @keyframes talk-anim { to { transform: scale(1.05) translateY(-5px); } }
+
+        /* Chat Section */
+        #chat-box {
+            width: 400px; background: var(--card); border-radius: 24px;
+            display: flex; flex-direction: column; padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Efeito de Fala */
-        .talking .avatar-circle-inner {
-            border-color: var(--accent);
-            box-shadow: 0 0 60px rgba(16, 185, 129, 0.4);
-            animation: pulse-border 1.5s infinite;
+        #log { flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 10px; }
+        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+        .user { background: var(--primary); align-self: flex-end; margin-left: 40px; }
+        .ai { background: rgba(255,255,255,0.05); align-self: flex-start; margin-right: 40px; }
+
+        button {
+            background: var(--primary); color: white; border: none;
+            padding: 16px; border-radius: 12px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; font-size: 16px;
         }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        button:disabled { background: #475569; cursor: not-allowed; transform: none; }
 
-        .talking #avatar-img { animation: avatar-float 0.3s infinite alternate ease-in-out; }
-
-        @keyframes avatar-float { from { transform: scale(1.1) translateY(0); } to { transform: scale(1.12) translateY(-8px); } }
-        @keyframes pulse-border { 0% { border-color: var(--accent); } 50% { border-color: #34d399; } 100% { border-color: var(--accent); } }
-
-        /* Sidebar & Chat */
-        .sidebar { width: 420px; display: flex; flex-direction: column; gap: 1.5rem; }
-        .chat-card {
-            flex: 1; background: var(--card-bg); border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.08); padding: 2rem;
-            display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-
-        .chat-header { margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 1rem; }
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; }
-        .status-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        #chat-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.2rem; padding-right: 0.5rem; }
-        .msg { padding: 1rem 1.4rem; border-radius: 20px; font-size: 0.95rem; line-height: 1.6; max-width: 85%; }
-        .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .msg.ai { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.03); }
-
-        .controls { margin-top: 1.5rem; }
-        #actionBtn {
-            width: 100%; padding: 1.25rem; border-radius: 20px; border: none;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-        }
-        #actionBtn:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.5); }
-        #actionBtn:active { transform: translateY(0); }
-        #actionBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* Custom Scrollbar */
-        #chat-log::-webkit-scrollbar { width: 6px; }
-        #chat-log::-webkit-scrollbar-track { background: transparent; }
-        #chat-log::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .status { font-size: 12px; color: #94a3b8; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #475569; }
+        .active .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
     </style>
 </head>
 <body>
 
-    <div class="mesh-gradient"></div>
-
-    <header>
-        <div class="brand"><div class="brand-dot"></div> AI English Tutor</div>
-        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">PROFESSIONAL EDITION</div>
-    </header>
-
     <main>
-        <div id="avatar-section">
-            <div class="avatar-circle-outer" id="avatar-container">
-                <div class="avatar-circle-inner">
-                    <!-- Avatar visível garantido: Professora elegante -->
-                    <img id="avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=EnglishTeacher&gender=female&clothing=blazer&clothingColor=3c444d&eyes=happy&mouth=smile&top=longHair&hairColor=2c1b18" alt="English Teacher">
-                </div>
+        <div id="avatar-box">
+            <div class="circle" id="avatar-container">
+                <!-- SVG da Professora Embutido diretamente no HTML -->
+                <svg id="teacher-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="90" fill="#3182ce" opacity="0.1"/>
+                    <!-- Cabelo -->
+                    <path d="M40 100 Q40 40 100 40 Q160 40 160 100" stroke="#2D3748" stroke-width="20" fill="none"/>
+                    <!-- Rosto -->
+                    <circle cx="100" cy="105" r="50" fill="#FBD38D"/>
+                    <!-- Olhos -->
+                    <circle cx="80" cy="100" r="5" fill="#2D3748"/>
+                    <circle cx="120" cy="100" r="5" fill="#2D3748"/>
+                    <!-- Boca -->
+                    <path id="mouth" d="M85 130 Q100 140 115 130" stroke="#2D3748" stroke-width="3" fill="none"/>
+                    <!-- Óculos (Estilo Professora) -->
+                    <path d="M65 100 L90 100 M110 100 L135 100" stroke="#2D3748" stroke-width="2"/>
+                    <circle cx="75" cy="100" r="12" stroke="#2D3748" stroke-width="2" fill="none"/>
+                    <circle cx="125" cy="100" r="12" stroke="#2D3748" stroke-width="2" fill="none"/>
+                </svg>
             </div>
-            <div style="margin-top: 2rem; text-align: center;">
-                <h2 style="margin: 0; font-weight: 800; font-size: 1.8rem;">Sua Professora 3D</h2>
-                <p style="color: var(--text-muted); margin-top: 0.5rem;">Pronta para te ajudar a dominar o inglês.</p>
-            </div>
+            <h2 style="margin-top: 20px;">English Teacher</h2>
         </div>
 
-        <div class="sidebar">
-            <div class="chat-card">
-                <div class="chat-header">
-                    <div class="status-badge"><div class="status-dot"></div> <span id="status-label">ONLINE</span></div>
-                </div>
-                <div id="chat-log">
-                    <div class="msg ai">Olá! Eu sou sua professora de inglês. Estou ansiosa para praticar com você!</div>
-                </div>
-                <div class="controls">
-                    <button id="actionBtn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                        <span>Começar Conversa</span>
-                    </button>
-                </div>
+        <div id="chat-box">
+            <div class="status active" id="status-ui">
+                <div class="dot"></div> <span id="status-text">Pronta</span>
             </div>
+            <div id="log">
+                <div class="msg ai">Olá! Sou sua professora de inglês. Vamos começar?</div>
+            </div>
+            <button id="btn">Começar Conversa</button>
         </div>
     </main>
 
     <script>
-        /**
-         * CONFIGURAÇÃO - INSIRA SUA CHAVE GROQ ABAIXO
-         */
-        const GROQ_API_KEY = "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"; 
+        // CONFIGURAÇÃO - COLOQUE SUA CHAVE AQUI
+        const API_KEY = "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";
 
-        const actionBtn = document.getElementById('actionBtn');
-        const chatLog = document.getElementById('chat-log');
-        const avatarContainer = document.getElementById('avatar-container');
-        const statusLabel = document.getElementById('status-label');
-        const avatarImg = document.getElementById('avatar-img');
+        const btn = document.getElementById('btn');
+        const log = document.getElementById('log');
+        const avatar = document.getElementById('avatar-container');
+        const statusText = document.getElementById('status-text');
 
-        // Reconhecimento de Voz
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-        if (recognition) {
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
+        // Voz e Reconhecimento
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+
+        function addMsg(text, side) {
+            const d = document.createElement('div');
+            d.className = `msg ${side}`;
+            d.innerText = text;
+            log.appendChild(d);
+            log.scrollTop = log.scrollHeight;
         }
 
-        // Função para Adicionar Mensagens no Chat
-        function addMessage(text, type) {
-            const div = document.createElement('div');
-            div.className = `msg ${type}`;
-            div.innerText = text;
-            chatLog.appendChild(div);
-            chatLog.scrollTop = chatLog.scrollHeight;
-        }
-
-        // Função de Fala (TTS)
-        function speak(text, callback) {
-            window.speechSynthesis.cancel(); // Para qualquer fala anterior
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            
-            // Busca voz feminina
-            const voices = window.speechSynthesis.getVoices();
-            const femaleVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Zira')));
-            if (femaleVoice) utterance.voice = femaleVoice;
-
-            utterance.onstart = () => {
-                avatarContainer.classList.add('talking');
-                updateStatus("FALANDO...", true);
-            };
-            utterance.onend = () => {
-                avatarContainer.classList.remove('talking');
-                updateStatus("ONLINE", true);
-                if (callback) callback();
-            };
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Chamada à API Groq
-        async function callGroq(userText) {
-            if (GROQ_API_KEY === "SUA_CHAVE_GROQ_AQUI") {
-                const errorMsg = "Por favor, insira sua chave da API Groq no código para começarmos!";
-                addMessage(errorMsg, 'ai');
-                speak(errorMsg);
-                resetButton();
+        async function talkToAI(text) {
+            if (API_KEY === "SUA_CHAVE_GROQ_AQUI") {
+                const m = "Erro: Chave API não configurada no código (linha 97).";
+                addMsg(m, 'ai');
+                speak(m);
                 return;
             }
 
-            updateStatus("PENSANDO...", true);
+            statusText.innerText = "Pensando...";
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${GROQ_API_KEY}`,
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${API_KEY}`
                     },
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
                         messages: [
-                            { role: "system", content: "You are a professional, friendly, and expert female English teacher. Give concise, helpful answers (1-2 sentences). Encourage the student." },
-                            { role: "user", content: userText }
-                        ],
-                        temperature: 0.7
+                            {role: "system", content: "You are a professional female English teacher. Be concise."},
+                            {role: "user", content: text}
+                        ]
                     })
                 });
 
-                if (!response.ok) throw new Error("API Error");
-
                 const data = await response.json();
-                const aiReply = data.choices[0].message.content;
+                if (data.error) throw new Error(data.error.message);
                 
-                addMessage(aiReply, 'ai');
-                speak(aiReply, () => {
-                    resetButton();
-                });
-
-            } catch (error) {
-                console.error(error);
-                const failMsg = "Desculpe, tive um problema de conexão. Verifique sua chave API e internet.";
-                addMessage(failMsg, 'ai');
-                speak(failMsg);
-                resetButton();
+                const reply = data.choices[0].message.content;
+                addMsg(reply, 'ai');
+                speak(reply);
+            } catch (e) {
+                addMsg("Erro de Conexão: " + e.message, 'ai');
+                btn.disabled = false;
+                statusText.innerText = "Erro";
             }
         }
 
-        function updateStatus(text, active) {
-            statusLabel.innerText = text;
-            document.querySelector('.status-dot').style.background = active ? '#10b981' : '#ef4444';
+        function speak(text) {
+            const ut = new SpeechSynthesisUtterance(text);
+            ut.lang = 'en-US';
+            ut.onstart = () => {
+                avatar.classList.add('talking');
+                statusText.innerText = "Falando...";
+            };
+            ut.onend = () => {
+                avatar.classList.remove('talking');
+                statusText.innerText = "Pronta";
+                btn.disabled = false;
+                btn.innerText = "Falar Novamente";
+            };
+            window.speechSynthesis.speak(ut);
         }
 
-        function resetButton() {
-            actionBtn.disabled = false;
-            actionBtn.querySelector('span').innerText = "Falar Novamente";
-        }
-
-        // Lógica do Botão Principal
-        let isFirstTime = true;
-        actionBtn.onclick = () => {
-            if (isFirstTime) {
-                isFirstTime = false;
-                const greeting = "Let's start talking!";
-                addMessage(greeting, 'ai');
-                speak(greeting, () => {
-                    resetButton();
-                });
+        let first = true;
+        btn.onclick = () => {
+            if (first) {
+                first = false;
+                const g = "Let's start talking!";
+                addMsg(g, 'ai');
+                speak(g);
+                btn.disabled = true;
                 return;
             }
-
-            if (!recognition) {
-                alert("Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.");
-                return;
-            }
-
             recognition.start();
-            actionBtn.disabled = true;
-            actionBtn.querySelector('span').innerText = "Ouvindo...";
-            updateStatus("OUVINDO...", true);
+            btn.disabled = true;
+            btn.innerText = "Ouvindo...";
+            statusText.innerText = "Ouvindo...";
         };
 
-        if (recognition) {
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                addMessage(transcript, 'user');
-                callGroq(transcript);
-            };
+        recognition.onresult = (e) => {
+            const t = e.results[0][0].transcript;
+            addMsg(t, 'user');
+            talkToAI(t);
+        };
 
-            recognition.onerror = () => {
-                resetButton();
-                updateStatus("ERRO", false);
-            };
-        }
-
-        // Inicializar vozes
-        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        recognition.onerror = () => {
+            btn.disabled = false;
+            btn.innerText = "Tentar Novamente";
+        };
     </script>
 </body>
 </html>
