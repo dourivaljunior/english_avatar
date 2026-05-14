@@ -4,143 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI English Tutor - Professional Experience</title>
+    <!-- Fontes Modernas -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
+            --primary-light: #818cf8;
             --primary-dark: #4f46e5;
-            --bg: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text: #f8fafc;
+            --bg: #0b0f1a;
+            --card-bg: rgba(23, 28, 41, 0.8);
+            --text: #ffffff;
             --text-muted: #94a3b8;
-            --neon-green: #22c55e;
+            --accent: #10b981;
         }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg); color: var(--text);
             overflow: hidden; display: flex; flex-direction: column;
         }
 
-        .bg-gradient {
+        /* Fundo Animado */
+        .mesh-gradient {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+            background: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
             z-index: -1;
         }
 
         header {
-            padding: 1.5rem 2rem; display: flex; justify-content: space-between;
-            align-items: center; background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 10;
+            padding: 1.5rem 3rem; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(11, 15, 26, 0.6);
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
         }
 
-        .logo {
-            font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .brand { font-size: 1.5rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .brand-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 15px var(--primary); }
+
+        main { flex: 1; display: flex; padding: 2rem 3rem; gap: 2rem; position: relative; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+        /* Avatar Container Refinado */
+        #avatar-section {
+            flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--card-bg); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
 
-        main { flex: 1; display: flex; padding: 2rem; gap: 2rem; position: relative; }
-
-        #avatar-container {
-            flex: 1; border-radius: 24px; overflow: hidden;
-            background: rgba(0, 0, 0, 0.3); position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .avatar-circle-outer {
+            width: 380px; height: 380px; border-radius: 50%;
+            border: 2px solid rgba(99, 102, 241, 0.2);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative; transition: all 0.5s ease;
         }
 
-        .avatar-glow {
-            position: absolute; width: 400px; height: 400px;
-            background: var(--primary); filter: blur(120px); opacity: 0.15;
-            border-radius: 50%; animation: pulse 4s infinite alternate;
-        }
-
-        @keyframes pulse { from { opacity: 0.1; transform: scale(0.8); } to { opacity: 0.25; transform: scale(1.2); } }
-
-        #avatar-visual {
-            width: 280px; height: 280px; border-radius: 50%;
+        .avatar-circle-inner {
+            width: 320px; height: 320px; border-radius: 50%;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             border: 4px solid var(--primary);
-            background: url('https://api.dicebear.com/7.x/avataaars/svg?seed=teacher&gender=female&clothing=blazer&eyes=happy&mouth=smile') center/cover;
-            background-color: #1e293b;
-            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
-            z-index: 2; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            overflow: hidden; position: relative;
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.3);
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .talking #avatar-visual {
-            animation: speak-bounce 0.2s infinite alternate;
-            border-color: var(--neon-green);
-            box-shadow: 0 0 60px rgba(34, 197, 94, 0.5);
-            transform: scale(1.05);
+        /* Avatar Visual - Usando SVG Dinâmico para Garantia de Carregamento */
+        #avatar-img {
+            width: 100%; height: 100%; object-fit: cover;
+            transform: scale(1.1); transition: transform 0.3s ease;
         }
 
-        @keyframes speak-bounce { 
-            0% { transform: scale(1.05) translateY(0); }
-            100% { transform: scale(1.07) translateY(-5px); }
+        /* Efeito de Fala */
+        .talking .avatar-circle-inner {
+            border-color: var(--accent);
+            box-shadow: 0 0 60px rgba(16, 185, 129, 0.4);
+            animation: pulse-border 1.5s infinite;
         }
 
-        .sidebar { width: 400px; display: flex; flex-direction: column; gap: 1.5rem; z-index: 5; }
-        .card {
-            background: var(--card-bg); backdrop-filter: blur(12px);
-            border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; flex-direction: column; flex: 1;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        .talking #avatar-img { animation: avatar-float 0.3s infinite alternate ease-in-out; }
+
+        @keyframes avatar-float { from { transform: scale(1.1) translateY(0); } to { transform: scale(1.12) translateY(-8px); } }
+        @keyframes pulse-border { 0% { border-color: var(--accent); } 50% { border-color: #34d399; } 100% { border-color: var(--accent); } }
+
+        /* Sidebar & Chat */
+        .sidebar { width: 420px; display: flex; flex-direction: column; gap: 1.5rem; }
+        .chat-card {
+            flex: 1; background: var(--card-bg); border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08); padding: 2rem;
+            display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
         }
 
-        #chat-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 0.5rem; }
-        .message { padding: 0.9rem 1.3rem; border-radius: 18px; font-size: 0.95rem; line-height: 1.5; max-width: 85%; }
-        .message.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .message.ai { align-self: flex-start; background: rgba(255, 255, 255, 0.1); border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+        .chat-header { margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 1rem; }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; }
+        .status-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .status { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; font-weight: 500; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: #475569; transition: all 0.3s; }
-        .dot.active { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+        #chat-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.2rem; padding-right: 0.5rem; }
+        .msg { padding: 1rem 1.4rem; border-radius: 20px; font-size: 0.95rem; line-height: 1.6; max-width: 85%; }
+        .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.03); }
 
-        .controls { margin-top: 1rem; }
-        button {
-            width: 100%; padding: 1.2rem; border-radius: 16px; border: none;
-            background: var(--primary); color: white; font-weight: 700; cursor: pointer;
-            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .controls { margin-top: 1.5rem; }
+        #actionBtn {
+            width: 100%; padding: 1.25rem; border-radius: 20px; border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
         }
-        button:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
-        button:active { transform: translateY(0); }
-        button:disabled { background: #334155; cursor: not-allowed; transform: none; opacity: 0.7; }
+        #actionBtn:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.5); }
+        #actionBtn:active { transform: translateY(0); }
+        #actionBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        #chat-log::-webkit-scrollbar { width: 5px; }
+        /* Custom Scrollbar */
+        #chat-log::-webkit-scrollbar { width: 6px; }
         #chat-log::-webkit-scrollbar-track { background: transparent; }
         #chat-log::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
+    <div class="mesh-gradient"></div>
 
     <header>
-        <div class="logo">AI English Tutor</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Groq Llama-3 Intelligence</div>
+        <div class="brand"><div class="brand-dot"></div> AI English Tutor</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">PROFESSIONAL EDITION</div>
     </header>
 
     <main>
-        <div id="avatar-container">
-            <div class="avatar-glow"></div>
-            <div id="avatar-visual"></div>
+        <div id="avatar-section">
+            <div class="avatar-circle-outer" id="avatar-container">
+                <div class="avatar-circle-inner">
+                    <!-- Avatar visível garantido: Professora elegante -->
+                    <img id="avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=EnglishTeacher&gender=female&clothing=blazer&clothingColor=3c444d&eyes=happy&mouth=smile&top=longHair&hairColor=2c1b18" alt="English Teacher">
+                </div>
+            </div>
+            <div style="margin-top: 2rem; text-align: center;">
+                <h2 style="margin: 0; font-weight: 800; font-size: 1.8rem;">Sua Professora 3D</h2>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Pronta para te ajudar a dominar o inglês.</p>
+            </div>
         </div>
 
         <div class="sidebar">
-            <div class="card">
-                <div class="status">
-                    <div id="status-dot" class="dot active"></div>
-                    <span id="status-text">Pronta para conversar</span>
+            <div class="chat-card">
+                <div class="chat-header">
+                    <div class="status-badge"><div class="status-dot"></div> <span id="status-label">ONLINE</span></div>
                 </div>
                 <div id="chat-log">
-                    <div class="message ai">Hello! I am your English teacher. I'm here to help you practice your conversation skills. Click the button below to start!</div>
+                    <div class="msg ai">Olá! Eu sou sua professora de inglês. Estou ansiosa para praticar com você!</div>
                 </div>
                 <div class="controls">
                     <button id="actionBtn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                         <span>Começar Conversa</span>
                     </button>
                 </div>
@@ -149,134 +169,153 @@
     </main>
 
     <script>
-        // CONFIGURAÇÃO - INSIRA SUA CHAVE GROQ AQUI
+        /**
+         * CONFIGURAÇÃO - INSIRA SUA CHAVE GROQ ABAIXO
+         */
         const GROQ_API_KEY = "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"; 
 
         const actionBtn = document.getElementById('actionBtn');
         const chatLog = document.getElementById('chat-log');
         const avatarContainer = document.getElementById('avatar-container');
-        const statusText = document.getElementById('status-text');
-        const statusDot = document.getElementById('status-dot');
+        const statusLabel = document.getElementById('status-label');
+        const avatarImg = document.getElementById('avatar-img');
 
+        // Reconhecimento de Voz
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = SpeechRecognition ? new SpeechRecognition() : null;
         if (recognition) {
             recognition.lang = 'en-US';
-            recognition.continuous = false;
+            recognition.interimResults = false;
         }
 
-        async function callGroq(text) {
-            if (GROQ_API_KEY === "SUA_CHAVE_GROQ_AQUI") {
-                const m = "Please, add your Groq API Key in the code (line 144) to start our class!";
-                addMessage(m, 'ai');
-                speak(m);
-                return;
-            }
-            
-            updateStatus("Thinking...", true);
-            try {
-                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: "You are a professional, friendly, and encouraging female English teacher. Keep your answers concise (max 2-3 sentences) to maintain a natural conversation flow." },
-                            { role: "user", content: text }
-                        ],
-                        temperature: 0.7
-                    })
-                });
-                const data = await res.json();
-                const reply = data.choices[0].message.content;
-                addMessage(reply, 'ai');
-                speak(reply);
-            } catch (e) {
-                console.error(e);
-                addMessage("I'm sorry, I'm having trouble connecting. Please check your API key and internet connection.", 'ai');
-                resetBtn();
-            }
-        }
-
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            
-            // Tenta encontrar uma voz feminina em inglês
-            const voices = window.speechSynthesis.getVoices();
-            const femaleVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha')));
-            if (femaleVoice) utterance.voice = femaleVoice;
-
-            utterance.onstart = () => {
-                avatarContainer.classList.add('talking');
-                actionBtn.disabled = true;
-                actionBtn.querySelector('span').innerText = "Speaking...";
-                updateStatus("Speaking...", true);
-            };
-            utterance.onend = () => {
-                avatarContainer.classList.remove('talking');
-                resetBtn();
-                updateStatus("Ready to listen", true);
-            };
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function addMessage(text, side) {
+        // Função para Adicionar Mensagens no Chat
+        function addMessage(text, type) {
             const div = document.createElement('div');
-            div.className = `message ${side}`;
+            div.className = `msg ${type}`;
             div.innerText = text;
             chatLog.appendChild(div);
             chatLog.scrollTop = chatLog.scrollHeight;
         }
 
-        function updateStatus(text, active) {
-            statusText.innerText = text;
-            statusDot.className = active ? "dot active" : "dot";
+        // Função de Fala (TTS)
+        function speak(text, callback) {
+            window.speechSynthesis.cancel(); // Para qualquer fala anterior
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            
+            // Busca voz feminina
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Zira')));
+            if (femaleVoice) utterance.voice = femaleVoice;
+
+            utterance.onstart = () => {
+                avatarContainer.classList.add('talking');
+                updateStatus("FALANDO...", true);
+            };
+            utterance.onend = () => {
+                avatarContainer.classList.remove('talking');
+                updateStatus("ONLINE", true);
+                if (callback) callback();
+            };
+            window.speechSynthesis.speak(utterance);
         }
 
-        function resetBtn() {
-            actionBtn.disabled = false;
-            actionBtn.querySelector('span').innerText = "Tap to Speak";
-        }
-
-        actionBtn.onclick = () => {
-            if (!recognition) {
-                alert("Your browser does not support speech recognition. Please use Chrome or Edge.");
+        // Chamada à API Groq
+        async function callGroq(userText) {
+            if (GROQ_API_KEY === "SUA_CHAVE_GROQ_AQUI") {
+                const errorMsg = "Por favor, insira sua chave da API Groq no código para começarmos!";
+                addMessage(errorMsg, 'ai');
+                speak(errorMsg);
+                resetButton();
                 return;
             }
+
+            updateStatus("PENSANDO...", true);
             try {
-                recognition.start();
-                actionBtn.disabled = true;
-                actionBtn.querySelector('span').innerText = "Listening...";
-                updateStatus("Listening...", true);
-            } catch(e) {
-                console.error(e);
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${GROQ_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: "You are a professional, friendly, and expert female English teacher. Give concise, helpful answers (1-2 sentences). Encourage the student." },
+                            { role: "user", content: userText }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) throw new Error("API Error");
+
+                const data = await response.json();
+                const aiReply = data.choices[0].message.content;
+                
+                addMessage(aiReply, 'ai');
+                speak(aiReply, () => {
+                    resetButton();
+                });
+
+            } catch (error) {
+                console.error(error);
+                const failMsg = "Desculpe, tive um problema de conexão. Verifique sua chave API e internet.";
+                addMessage(failMsg, 'ai');
+                speak(failMsg);
+                resetButton();
             }
+        }
+
+        function updateStatus(text, active) {
+            statusLabel.innerText = text;
+            document.querySelector('.status-dot').style.background = active ? '#10b981' : '#ef4444';
+        }
+
+        function resetButton() {
+            actionBtn.disabled = false;
+            actionBtn.querySelector('span').innerText = "Falar Novamente";
+        }
+
+        // Lógica do Botão Principal
+        let isFirstTime = true;
+        actionBtn.onclick = () => {
+            if (isFirstTime) {
+                isFirstTime = false;
+                const greeting = "Let's start talking!";
+                addMessage(greeting, 'ai');
+                speak(greeting, () => {
+                    resetButton();
+                });
+                return;
+            }
+
+            if (!recognition) {
+                alert("Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.");
+                return;
+            }
+
+            recognition.start();
+            actionBtn.disabled = true;
+            actionBtn.querySelector('span').innerText = "Ouvindo...";
+            updateStatus("OUVINDO...", true);
         };
 
         if (recognition) {
-            recognition.onresult = (e) => {
-                const text = e.results[0][0].transcript;
-                addMessage(text, 'user');
-                callGroq(text);
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                addMessage(transcript, 'user');
+                callGroq(transcript);
             };
-            recognition.onerror = (e) => {
-                console.error("Recognition error:", e.error);
-                resetBtn();
-                updateStatus("Error. Try again.", false);
-            };
-            recognition.onend = () => {
-                if (actionBtn.querySelector('span').innerText === "Listening...") {
-                    resetBtn();
-                    updateStatus("Ready", true);
-                }
+
+            recognition.onerror = () => {
+                resetButton();
+                updateStatus("ERRO", false);
             };
         }
 
-        // Garante que as vozes sejam carregadas
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        // Inicializar vozes
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
     </script>
 </body>
 </html>
