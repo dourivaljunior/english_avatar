@@ -3,19 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI English Tutor - Professional 3D Experience</title>
-    
-    <!-- Import Map for TalkingHead3D and Three.js -->
-    <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
-        "talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.1/modules/talkinghead.mjs"
-      }
-    }
-    </script>
-
+    <title>AI English Tutor - Professional Experience</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -28,443 +16,267 @@
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--bg); color: var(--text);
+            overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* Background Animation */
         .bg-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
             z-index: -1;
         }
 
         header {
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 2rem; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 10;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
+            font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em;
             background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        main {
-            flex: 1;
-            display: flex;
-            position: relative;
-            padding: 2rem;
-            gap: 2rem;
-        }
+        main { flex: 1; display: flex; padding: 2rem; gap: 2rem; position: relative; }
 
-        /* 3D Avatar Container */
         #avatar-container {
-            flex: 1;
-            position: relative;
-            border-radius: 24px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.2);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        #avatar {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Sidebar / Controls */
-        .sidebar {
-            width: 380px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            z-index: 5;
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 1.5rem;
+            flex: 1; border-radius: 24px; overflow: hidden;
+            background: rgba(0, 0, 0, 0.3); position: relative;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+        .avatar-glow {
+            position: absolute; width: 400px; height: 400px;
+            background: var(--primary); filter: blur(120px); opacity: 0.15;
+            border-radius: 50%; animation: pulse 4s infinite alternate;
         }
 
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #475569;
-            transition: all 0.3s ease;
+        @keyframes pulse { from { opacity: 0.1; transform: scale(0.8); } to { opacity: 0.25; transform: scale(1.2); } }
+
+        #avatar-visual {
+            width: 280px; height: 280px; border-radius: 50%;
+            border: 4px solid var(--primary);
+            background: url('https://api.dicebear.com/7.x/avataaars/svg?seed=teacher&gender=female&clothing=blazer&eyes=happy&mouth=smile') center/cover;
+            background-color: #1e293b;
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+            z-index: 2; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
 
-        .dot.active {
-            background: var(--neon-green);
-            box-shadow: 0 0 12px var(--neon-green);
+        .talking #avatar-visual {
+            animation: speak-bounce 0.2s infinite alternate;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 60px rgba(34, 197, 94, 0.5);
+            transform: scale(1.05);
         }
 
-        .status-text {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-muted);
+        @keyframes speak-bounce { 
+            0% { transform: scale(1.05) translateY(0); }
+            100% { transform: scale(1.07) translateY(-5px); }
         }
 
-        #chat-log {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            padding-right: 0.5rem;
-            max-height: 400px;
+        .sidebar { width: 400px; display: flex; flex-direction: column; gap: 1.5rem; z-index: 5; }
+        .card {
+            background: var(--card-bg); backdrop-filter: blur(12px);
+            border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; flex-direction: column; flex: 1;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        .message {
-            max-width: 85%;
-            padding: 0.75rem 1rem;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
+        #chat-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 0.5rem; }
+        .message { padding: 0.9rem 1.3rem; border-radius: 18px; font-size: 0.95rem; line-height: 1.5; max-width: 85%; }
+        .message.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .message.ai { align-self: flex-start; background: rgba(255, 255, 255, 0.1); border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
 
-        .message.user {
-            align-self: flex-end;
-            background: var(--primary);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
+        .status { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; font-weight: 500; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #475569; transition: all 0.3s; }
+        .dot.active { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
 
-        .message.ai {
-            align-self: flex-start;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            border-bottom-left-radius: 4px;
-        }
-
-        .controls {
-            margin-top: auto;
-        }
-
+        .controls { margin-top: 1rem; }
         button {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 12px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            width: 100%; padding: 1.2rem; border-radius: 16px; border: none;
+            background: var(--primary); color: white; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        button:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
+        button:active { transform: translateY(0); }
+        button:disabled { background: #334155; cursor: not-allowed; transform: none; opacity: 0.7; }
 
-        button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            background: #334155;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .hint {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        /* Scrollbar styling */
-        #chat-log::-webkit-scrollbar {
-            width: 4px;
-        }
-        #chat-log::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        #chat-log::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        /* Loading Overlay */
-        #loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            transition: opacity 0.5s ease;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        #chat-log::-webkit-scrollbar { width: 5px; }
+        #chat-log::-webkit-scrollbar-track { background: transparent; }
+        #chat-log::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
     </style>
 </head>
 <body>
-
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <p>Carregando Professora 3D...</p>
-    </div>
 
     <div class="bg-gradient"></div>
 
     <header>
         <div class="logo">AI English Tutor</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Powered by Groq Llama-3 & TalkingHead3D</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Groq Llama-3 Intelligence</div>
     </header>
 
     <main>
         <div id="avatar-container">
-            <div id="avatar"></div>
+            <div class="avatar-glow"></div>
+            <div id="avatar-visual"></div>
         </div>
 
         <div class="sidebar">
-            <div class="card" style="flex: 1; display: flex; flex-direction: column;">
-                <div class="status-indicator">
-                    <div id="status-dot" class="dot"></div>
-                    <span id="status-text" class="status-text">Sistema Pronto</span>
+            <div class="card">
+                <div class="status">
+                    <div id="status-dot" class="dot active"></div>
+                    <span id="status-text">Pronta para conversar</span>
                 </div>
-                
                 <div id="chat-log">
-                    <div class="message ai">Olá! Eu sou sua professora de inglês 3D. Clique no botão abaixo para começarmos a conversar.</div>
+                    <div class="message ai">Hello! I am your English teacher. I'm here to help you practice your conversation skills. Click the button below to start!</div>
                 </div>
-
                 <div class="controls">
                     <button id="actionBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                         <span>Começar Conversa</span>
                     </button>
-                    <p class="hint">Certifique-se de que seu microfone está ativado.</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <script type="module">
-        import { TalkingHead } from "talkinghead";
-
+    <script>
         // CONFIGURAÇÃO - INSIRA SUA CHAVE GROQ AQUI
-        const GROQ_API_KEY = "SUA_CHAVE_GROQ_AQUI"; 
-        
-        let head;
-        const nodeAvatar = document.getElementById('avatar');
+        const GROQ_API_KEY = "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"; 
+
         const actionBtn = document.getElementById('actionBtn');
-        const statusDot = document.getElementById('status-dot');
-        const statusText = document.getElementById('status-text');
         const chatLog = document.getElementById('chat-log');
-        const loadingOverlay = document.getElementById('loading-overlay');
+        const avatarContainer = document.getElementById('avatar-container');
+        const statusText = document.getElementById('status-text');
+        const statusDot = document.getElementById('status-dot');
 
-        let recognition;
-        let isListening = false;
-        let isSpeaking = false;
-
-        // Inicializar Avatar 3D
-        async function initAvatar() {
-            try {
-                head = new TalkingHead(nodeAvatar, {
-                    cameraView: "upper",
-                    avatarMood: "neutral",
-                    ttsLang: "en-US",
-                    // Usando Web Speech API por padrão para evitar dependência de proxy complexa
-                    // TalkingHead3D gerencia visemes internos para Web Speech API
-                });
-
-                // Carregar um modelo feminino profissional do Ready Player Me
-                // Usando um modelo GLB público padrão para demonstração
-                await head.showAvatar({
-                    url: 'https://models.readyplayer.me/64bfa15f0e7290ad950da434.glb', // Modelo Feminino Profissional
-                    body: 'F',
-                    avatarMood: 'neutral',
-                    lipsyncLang: 'en'
-                });
-
-                loadingOverlay.style.opacity = '0';
-                setTimeout(() => loadingOverlay.style.display = 'none', 500);
-                
-                initSpeech();
-            } catch (error) {
-                console.error("Erro ao carregar avatar:", error);
-                alert("Erro ao carregar o modelo 3D. Verifique sua conexão.");
-            }
-        }
-
-        // Inicializar Reconhecimento de Voz
-        function initSpeech() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Seu navegador não suporta reconhecimento de voz.");
-                return;
-            }
-
-            recognition = new SpeechRecognition();
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+        if (recognition) {
             recognition.lang = 'en-US';
             recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onstart = () => {
-                isListening = true;
-                updateStatus("Ouvindo...", "active");
-                actionBtn.querySelector('span').innerText = "Ouvindo...";
-                actionBtn.disabled = true;
-            };
-
-            recognition.onresult = async (event) => {
-                const transcript = event.results[0][0].transcript;
-                addMessage(transcript, 'user');
-                await processAI(transcript);
-            };
-
-            recognition.onerror = (event) => {
-                console.error("Erro reconhecimento:", event.error);
-                stopListening();
-            };
-
-            recognition.onend = () => {
-                if (!isSpeaking) stopListening();
-            };
         }
 
-        function updateStatus(text, dotClass = "") {
-            statusText.innerText = text;
-            statusDot.className = "dot " + dotClass;
-        }
-
-        function stopListening() {
-            isListening = false;
-            if (!isSpeaking) {
-                updateStatus("Sistema Pronto", "");
-                actionBtn.querySelector('span').innerText = "Falar Novamente";
-                actionBtn.disabled = false;
-            }
-        }
-
-        function addMessage(text, side) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${side}`;
-            msgDiv.innerText = text;
-            chatLog.appendChild(msgDiv);
-            chatLog.scrollTop = chatLog.scrollHeight;
-        }
-
-        async function processAI(userInput) {
-            updateStatus("Pensando...", "active");
-            
-            if (GROQ_API_KEY === "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") {
-                const errorMsg = "Por favor, insira sua chave da API do Groq no código (linha 250).";
-                addMessage(errorMsg, 'ai');
-                speak(errorMsg);
+        async function callGroq(text) {
+            if (GROQ_API_KEY === "SUA_CHAVE_GROQ_AQUI") {
+                const m = "Please, add your Groq API Key in the code (line 144) to start our class!";
+                addMessage(m, 'ai');
+                speak(m);
                 return;
             }
-
+            
+            updateStatus("Thinking...", true);
             try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${GROQ_API_KEY}`,
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
                         messages: [
-                            { 
-                                role: "system", 
-                                content: "You are a professional and friendly female English teacher. Keep your answers concise, encouraging, and natural for a conversation. Focus on helping the student improve their English." 
-                            },
-                            { role: "user", content: userInput }
+                            { role: "system", content: "You are a professional, friendly, and encouraging female English teacher. Keep your answers concise (max 2-3 sentences) to maintain a natural conversation flow." },
+                            { role: "user", content: text }
                         ],
                         temperature: 0.7
                     })
                 });
-
-                const data = await response.json();
-                const aiText = data.choices[0].message.content;
-                
-                addMessage(aiText, 'ai');
-                speak(aiText);
-
-            } catch (error) {
-                console.error("Erro Groq:", error);
-                addMessage("Sorry, I had trouble connecting to my brain. Please check your API key.", 'ai');
-                updateStatus("Erro de Conexão", "");
-                actionBtn.disabled = false;
+                const data = await res.json();
+                const reply = data.choices[0].message.content;
+                addMessage(reply, 'ai');
+                speak(reply);
+            } catch (e) {
+                console.error(e);
+                addMessage("I'm sorry, I'm having trouble connecting. Please check your API key and internet connection.", 'ai');
+                resetBtn();
             }
         }
 
         function speak(text) {
-            isSpeaking = true;
-            updateStatus("Falando...", "active");
-            actionBtn.disabled = true;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            
+            // Tenta encontrar uma voz feminina em inglês
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha')));
+            if (femaleVoice) utterance.voice = femaleVoice;
 
-            // TalkingHead speak method handles the Web Speech API and Lip Sync
-            head.speakText(text, {
-                onEnd: () => {
-                    isSpeaking = false;
-                    updateStatus("Sistema Pronto", "");
-                    actionBtn.disabled = false;
-                    actionBtn.querySelector('span').innerText = "Falar Novamente";
-                }
-            });
+            utterance.onstart = () => {
+                avatarContainer.classList.add('talking');
+                actionBtn.disabled = true;
+                actionBtn.querySelector('span').innerText = "Speaking...";
+                updateStatus("Speaking...", true);
+            };
+            utterance.onend = () => {
+                avatarContainer.classList.remove('talking');
+                resetBtn();
+                updateStatus("Ready to listen", true);
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function addMessage(text, side) {
+            const div = document.createElement('div');
+            div.className = `message ${side}`;
+            div.innerText = text;
+            chatLog.appendChild(div);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function updateStatus(text, active) {
+            statusText.innerText = text;
+            statusDot.className = active ? "dot active" : "dot";
+        }
+
+        function resetBtn() {
+            actionBtn.disabled = false;
+            actionBtn.querySelector('span').innerText = "Tap to Speak";
         }
 
         actionBtn.onclick = () => {
-            if (!isListening && !isSpeaking) {
+            if (!recognition) {
+                alert("Your browser does not support speech recognition. Please use Chrome or Edge.");
+                return;
+            }
+            try {
                 recognition.start();
+                actionBtn.disabled = true;
+                actionBtn.querySelector('span').innerText = "Listening...";
+                updateStatus("Listening...", true);
+            } catch(e) {
+                console.error(e);
             }
         };
 
-        // Iniciar tudo
-        window.addEventListener('DOMContentLoaded', initAvatar);
+        if (recognition) {
+            recognition.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                addMessage(text, 'user');
+                callGroq(text);
+            };
+            recognition.onerror = (e) => {
+                console.error("Recognition error:", e.error);
+                resetBtn();
+                updateStatus("Error. Try again.", false);
+            };
+            recognition.onend = () => {
+                if (actionBtn.querySelector('span').innerText === "Listening...") {
+                    resetBtn();
+                    updateStatus("Ready", true);
+                }
+            };
+        }
 
+        // Garante que as vozes sejam carregadas
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
     </script>
 </body>
 </html>
